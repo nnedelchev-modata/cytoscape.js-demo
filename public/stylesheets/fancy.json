@@ -19,7 +19,7 @@
       "background-color": "#555",
       "text-outline-color": "#555",
       "text-outline-width": "2px",
-      "color": "#fff",
+      "color": "#D8D8D8",
       "overlay-padding": "6px",
       "z-index": "10"
     }
@@ -61,7 +61,7 @@
       "opacity": "0.4",
       "line-color": "#bbb",
       "width": "mapData(weight, 0, 1, 1, 8)",
-      "overlay-padding": "3px"
+      "overlay-padding": "13px"
     }
   },
   {

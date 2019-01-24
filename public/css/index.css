@@ -24,7 +24,7 @@ body {
   top: 0;
   bottom: 0;
   width: 20em;
-  background: #fff;
+  background: #ddd;
   border-left: 1px solid #ddd;
   z-index: 1;
   overflow: auto;
