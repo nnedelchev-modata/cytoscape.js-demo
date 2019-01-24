@@ -52,3 +52,23 @@ h1 {
 * + h2 {
   margin-top: 0.5em;
 }
+
+.config-toggle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 1em;
+  margin: 0.2em;
+  cursor: pointer;
+  color: #000000;
+  z-index: 9999999;
+}
+
+.config-closed .tools {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.config-closed #cy {
+  right: 0;
+}
