@@ -1,0 +1,19 @@
+{
+  "name": "neo4j",
+  "version": "1.0.0",
+  "description": "Neo4J with express and simple UI",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "*",
+    "body-parser": "*",
+    "ejs":"^2.4.2",
+    "morgan":"*",
+    "neo4j-driver": "*",
+    "cytoscape": "*"
+  }
+}
