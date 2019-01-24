@@ -8,6 +8,8 @@
     let toJson = obj => obj.json();
     let toText = obj => obj.text();
 
+    
+
     let cy;
 
     let $stylesheet = $('#style');
@@ -23,6 +25,11 @@
         cy.style().fromJson( stylesheet ).update();
       }
     };
+    $('#config-toggle').addEventListener('click', function(){
+      $('body').classList.toggle('config-closed');
+
+      cy.resize();
+    });
     let applyStylesheetFromSelect = () => Promise.resolve( $stylesheet.value ).then( getStylesheet ).then( applyStylesheet );
 
     let $dataset = $('#data');
@@ -35,6 +42,12 @@
       // replace eles
       cy.elements().remove();
       cy.add( dataset );
+
+      //Get Clicked Node
+      cy.on('click', 'node', function(dataset){
+        console.log(getDataset);
+        console.log( 'clicked ' + this.id() );
+      });
     }
     let applyDatasetFromSelect = () => Promise.resolve( $dataset.value ).then( getDataset ).then( applyDataset );
 
@@ -47,6 +60,8 @@
         nodes.forEach( n => n.data( 'centrality', centrality.closeness(n) ) );
       }
     };
+
+    
 
     let $layout = $('#layout');
     let maxLayoutDuration = 1500;
@@ -74,7 +89,7 @@
         animate: true,
         randomize: true,
         maxSimulationTime: maxLayoutDuration,
-        boundingBox: { // to give cola more space to resolve initial overlaps
+        boundingBox: {
           x1: 0,
           y1: 0,
           x2: 10000,
@@ -109,7 +124,7 @@
         clockwise: true,
         startAngle: Math.PI * 1 / 6
       },
-      custom: { // replace with your own layout parameters
+      custom: {
         name: 'preset',
         padding: layoutPadding
       }
