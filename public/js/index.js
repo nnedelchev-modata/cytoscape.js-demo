@@ -25,15 +25,17 @@
         cy.style().fromJson( stylesheet ).update();
       }
     };
+    //Show Hide left menu
     $('#config-toggle').addEventListener('click', function(){
       $('body').classList.toggle('config-closed');
-
       cy.resize();
     });
+
     let applyStylesheetFromSelect = () => Promise.resolve( $stylesheet.value ).then( getStylesheet ).then( applyStylesheet );
 
     let $dataset = $('#data');
-    let getDataset = name => fetch(`datasets/${name}`).then( toJson );
+    //let getDataset = name => fetch(`datasets/${name}`).then( toJson );
+    let getDataset = name => fetch('api/getMovies').then(toJson);
     let applyDataset = dataset => {
       // so new eles are offscreen
       cy.zoom(0.001);
@@ -45,7 +47,6 @@
 
       //Get Clicked Node
       cy.on('click', 'node', function(dataset){
-        console.log(getDataset);
         console.log( 'clicked ' + this.id() );
       });
     }

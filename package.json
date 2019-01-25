@@ -14,6 +14,7 @@
     "ejs":"^2.4.2",
     "morgan":"*",
     "neo4j-driver": "*",
-    "cytoscape": "*"
+    "cytoscape": "*",
+    "lodash": "^4.15.0"
   }
 }
