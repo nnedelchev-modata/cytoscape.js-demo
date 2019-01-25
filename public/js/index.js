@@ -35,7 +35,13 @@
 
     let $dataset = $('#data');
     //let getDataset = name => fetch(`datasets/${name}`).then( toJson );
-    let getDataset = name => fetch('api/getMovies').then(toJson);
+    let getDataset = (name) => {
+      if(name === 'moviesNeo'){
+        return fetch('api/getMovies').then(toJson);
+      } else {
+        return fetch(`datasets/${name}`).then( toJson );
+      }
+    }
     let applyDataset = dataset => {
       // so new eles are offscreen
       cy.zoom(0.001);
