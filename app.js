@@ -19,6 +19,7 @@ var driver = neo4j.driver('bolt://172.17.0.3:7687', neo4j.auth.basic('neo4j', 'r
 var session = driver.session();
 
 app.get('/', function(req, res){
+    //Get data from neo4j
     session
         .run('MATCH (n) RETURN n LIMIT 50')
         .then(function(result){
