@@ -64,6 +64,37 @@ h1 {
   z-index: 9999999;
 }
 
+.connect {
+  box-sizing: border-box;
+  padding: 0.25em 0.5em;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 20em;
+  background: #ddd;
+  border-left: 1px solid #ddd;
+  z-index: 1;
+  overflow: auto;
+}
+
+.connect-toggle {
+  position: absolute;
+  right: 30px;
+  top: 0;
+  padding: 1em;
+  margin: 0.2em;
+  cursor: pointer;
+  color: #000000;
+  z-index: 9999999;
+}
+
+.connect-closed .connect {
+  opacity: 0;
+  pointer-events: none;
+}
+
+
 .config-closed .tools {
   opacity: 0;
   pointer-events: none;

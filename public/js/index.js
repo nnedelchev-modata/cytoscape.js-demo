@@ -31,6 +31,12 @@
       cy.resize();
     });
 
+    $('#connect-toggle').addEventListener('click', function(){
+      $('body').classList.toggle('config-closed');
+      $('body').classList.toggle('connect-closed');
+      cy.resize();
+    });
+
     let applyStylesheetFromSelect = () => Promise.resolve( $stylesheet.value ).then( getStylesheet ).then( applyStylesheet );
 
     let $dataset = $('#data');

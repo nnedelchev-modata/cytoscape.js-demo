@@ -16,13 +16,68 @@
   <script src="js/jquery-3.1.1.min.js"></script>
   <script src="js/tooltipster.bundle.min.js"></script>
   <script src="js/index.js"></script>
+  <script src="js/j2neo.js"></script>
+
 
   <title>Cytoscape.js demo</title>
 </head>
 
-<body>
+<body class="config-closed">
   <span class="fa fa-bars config-toggle" id="config-toggle"></span>
+  <span class="fa fa-database connect-toggle" id="connect-toggle"></span>
+  
   <div id="cy" class="main">
+  </div>
+  
+  <div class="connect" id="connection">
+    <h4> Connection Details </h4>
+      <form id="connection-form">
+            <div class="form-group row">
+                <div class="col">
+                    <label for="host">Host</label>
+                    <input class="form-control" id="host" placeholder="Enter the server host name or IP address" value="localhost" style="background-image: url(&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABHklEQVQ4EaVTO26DQBD1ohQWaS2lg9JybZ+AK7hNwx2oIoVf4UPQ0Lj1FdKktevIpel8AKNUkDcWMxpgSaIEaTVv3sx7uztiTdu2s/98DywOw3Dued4Who/M2aIx5lZV1aEsy0+qiwHELyi+Ytl0PQ69SxAxkWIA4RMRTdNsKE59juMcuZd6xIAFeZ6fGCdJ8kY4y7KAuTRNGd7jyEBXsdOPE3a0QGPsniOnnYMO67LgSQN9T41F2QGrQRRFCwyzoIF2qyBuKKbcOgPXdVeY9rMWgNsjf9ccYesJhk3f5dYT1HX9gR0LLQR30TnjkUEcx2uIuS4RnI+aj6sJR0AM8AaumPaM/rRehyWhXqbFAA9kh3/8/NvHxAYGAsZ/il8IalkCLBfNVAAAAABJRU5ErkJggg==&quot;); background-attachment: scroll; background-size: 16px 18px; background-position: 98% 50%; background-repeat: no-repeat no-repeat;">
+                </div>
+                <div class="col">
+                    <label for="port">Port</label>
+                    <input type="number" class="form-control" id="port" placeholder="Enter the server port number" value="7687">
+                </div>
+                <div class="col">
+                    <label for="host">User</label>
+                    <input class="form-control" id="user" placeholder="Enter your user name" value="neo4j">
+                </div>
+                <div class="col" id="password-here">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control text-security" id="password">
+                </div>
+            </div>
+            <div class="form-group">
+            </div>
+            <div class="form-group row">
+                <div class="col-12">
+                    <label for="cypher">Cypher</label>
+                    <textarea class="form-control" id="cypher" style="width:100%;height:7.5rem" title="Cypher query">MATCH (m:Movie)<-[:ACTED_IN]-(a:Person) RETURN m.title AS movie, collect(a.name) AS cast LIMIT 50</textarea>
+                </div>
+                <!--<div class="col-4">-->
+                    <!--<label for="params">Parameters</label>-->
+                    <!--<select id="params" class="custom-select" size="3" style="height:7.5rem">-->
+                    <!--</select>-->
+                <!--</div>-->
+            </div>
+            <div class="form-group">
+                <button id="connect-button" type="button" class="btn btn-primary" onclick="connect()">Connect</button>
+                <button id="disconnect-button" type="button" class="btn btn-primary" onclick="disconnect()" disabled="disabled">Disconnect
+                </button>
+                <button id="run-button" type="button" class="btn btn-primary" onclick="run($(&quot;#cypher&quot;).val())" disabled="disabled">Run
+                </button>
+            </div>
+            <div class="form-group" id="connection-management-status">
+            </div>
+            <table id="result" class="result table table-hover">
+                <thead id="result-head" class="thead-dark"></thead>
+                <tbody id="result-body"></tbody>
+                <tfoot id="result-foot" class="thead-dark"></tfoot>
+            </table>
+        </form>
   </div>
 
   <div class="tools" id="config">
@@ -72,17 +127,181 @@
         <option value="custom">Custom</option>
       </select>
     <i id="redo-algorithm" class="fa fa-refresh action-icon tooltip" title="Redo algorithm visualization"></i>
-<table id="results" class="table table-striped table-hover">
-                <thead>
-                <tr>
-                    <th>Movie</th>
-                    <th>Released</th>
-                    <th>Tagline</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+
+  <script>
+        $("#result-form").hide();
+
+        var pub = {};
+
+        function setConnectionManagementStatus(level, message) {
+            var status = document.getElementById("connection-management-status"),
+                div = document.createElement("div"),
+                text = document.createTextNode(message);
+            while (status.firstChild) status.removeChild(status.firstChild);
+            if (level) {
+                div.setAttribute("class", "alert alert-" + level);
+                div.setAttribute("role", "alert");
+                status.appendChild(div);
+                div.appendChild(text);
+            }
+        }
+
+        function setConnected(connected) {
+            if (connected) {
+                $("#run-button").removeAttr("disabled");
+                $("#connect-button").attr("disabled", "disabled");
+                $("#disconnect-button").removeAttr("disabled");
+            } else {
+                $("#run-button").attr("disabled", "disabled");
+                $("#connect-button").removeAttr("disabled");
+                $("#disconnect-button").attr("disabled", "disabled");
+            }
+        }
+
+        function connect() {
+            pub.cx = js2neo.open({
+                host: document.getElementById("host").value,
+                port: parseInt(document.getElementById("port").value),
+                user: document.getElementById("user").value,
+                password: document.getElementById("password").value,
+                onOpen: function(metadata) {
+                    // for (var key in metadata) {
+                    //     if (metadata.hasOwnProperty(key)) pub[key] = metadata[key];
+                    // }
+                    // setConnectionManagementStatus("success", "Connected to " + pub.host + " on port " + pub.port);
+                },
+                onHandshake: function(metadata) {
+                    // for (var key in metadata) {
+                    //     if (metadata.hasOwnProperty(key)) pub[key] = metadata[key];
+                    // }
+                    // setConnectionManagementStatus("success", "Using Bolt protocol v" + pub.protocolVersion);
+                },
+                onInit: function(metadata) {
+                    for (var key in metadata) {
+                        if (metadata.hasOwnProperty(key)) pub[key] = metadata[key];
+                    }
+                    setConnectionManagementStatus("success", "Connected with Bolt v" + pub.protocolVersion + " to " + pub.host + " on port " + pub.port + " as user " + pub.user);
+                    setConnected(true);
+                },
+                onInitFailure: function(failure) {
+                    setConnectionManagementStatus("danger", failure.code + ": " + failure.message);
+                    setConnected(false);
+                },
+                onClose: function(event) {
+                    switch (event.code)
+                    {
+                        case 1000:
+                        case 1001:
+                            setConnectionManagementStatus();
+                            break;
+                        case 1006:
+                            setConnectionManagementStatus("danger", "Connection failed");
+                            break;
+                        default:
+                            setConnectionManagementStatus("danger", "Connection failed with code " + event.code);
+                    }
+                    setConnected(false);
+                    pub.cx = undefined;
+                }
+            });
+        }
+
+        function disconnect() {
+            pub.cx.close();
+        }
+
+        function nodeValue(container, id, labels, properties) {
+            var card = document.createElement("div"),
+                cardHeader = document.createElement("h5"),
+                cardBody = document.createElement("div");
+            card.setAttribute("class", "card");
+            cardHeader.setAttribute("class", "card-header");
+            cardHeader.appendChild(document.createTextNode("#" + id + " " + labels));
+            cardBody.setAttribute("class", "card-body");
+            cardBody.appendChild(document.createTextNode(JSON.stringify(properties)));
+            card.appendChild(cardHeader);
+            card.appendChild(cardBody);
+            return card;
+        }
+
+        function run(cypher) {
+            // Clear any existing result
+            var head = document.getElementById("result-head"),
+                body = document.getElementById("result-body"),
+                foot = document.getElementById("result-foot");
+            while (head.firstChild) head.removeChild(head.firstChild);
+            while (body.firstChild) body.removeChild(body.firstChild);
+            while (foot.firstChild) foot.removeChild(foot.firstChild);
+
+            var fields = [],
+                count = 0,
+                t0 = new Date();
+
+            pub.cx.run(cypher, {}, {
+                onHeader: function (metadata) {
+                    $("#result-form").show();
+                    var tr = document.createElement("tr");
+                    for (var i = 0; i < metadata.fields.length; i++) {
+                        fields.push(metadata.fields[i]);
+                        var th = document.createElement("th");
+                        th.appendChild(document.createTextNode(fields[i]));
+                        tr.appendChild(th);
+                    }
+                    head.appendChild(tr)
+                },
+                onRecord: function (fields) {
+                    count += 1;
+                    var tr = document.createElement("tr");
+                    for (var i = 0; i < fields.length; i++) {
+                        var td = document.createElement("td");
+                        var div = document.createElement("div");
+                        var value = fields[i], content;
+                        if (value === null) {
+                            content = undefined;
+                        }
+                        else if (typeof value === "string") {
+                            content = document.createTextNode(value);
+                        }
+                        else if (typeof value === "object" && !Array.isArray(value)) {
+                            var type = value.constructor.name;
+                            switch (type) {
+                                case "Node":
+                                    content = nodeValue(div, value.id, value.labels, value.properties);
+                                    break;
+                                default:
+                                    div.setAttribute("style", "white-space: pre");
+                                    content = document.createTextNode(type + "(" + JSON.stringify(value, null, "  ") + ")");
+                            }
+                        }
+                        else {
+                            content = document.createTextNode(JSON.stringify(value));
+                        }
+                        if (content !== undefined)
+                            div.appendChild(content);
+                        td.appendChild(div);
+                        tr.appendChild(td);
+                    }
+                    body.appendChild(tr)
+                },
+                onFooter: function (metadata) {
+                    var time = new Date() - t0;
+                    var tr = document.createElement("tr");
+                    var th = document.createElement("th");
+                    th.setAttribute("colspan", "" + fields.length);
+                    var server = pub.user + "@" + pub.host + ":" + pub.port;
+                    th.appendChild(document.createTextNode(
+                        count + " record" + (count === 1 ? "" : "s") +
+                        " received from " + server + " in " + time + "ms"));
+                    tr.appendChild(th);
+                    foot.appendChild(tr)
+                },
+                onFailure: function (failure) {
+                    console.log(failure.code + ": " + failure.message);
+                }
+            });
+        }
+  </script>
+
 </body>
 
 </html>
