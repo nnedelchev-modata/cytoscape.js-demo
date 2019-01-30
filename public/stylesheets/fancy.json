@@ -92,6 +92,7 @@
       "border-opacity": "0.85",
       "background-color": "#394855",
       "text-outline-color": "#394855",
+      "font-size": "14px",
       "shadow-blur": "12px",
       "shadow-color": "#000",
       "shadow-opacity": "0.8",
@@ -213,7 +214,8 @@
     "selector": "edge.highlighted",
     "style": {
       "line-color": "#AAD8FF",
-      "width": "10px"
+      "width": "15px",
+      "font-size": "14px"
     }
   }
 ]

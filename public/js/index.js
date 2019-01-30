@@ -74,6 +74,7 @@
       //Get Clicked Node
       cy.on('click', 'node', function (event) {
         cy.elements().removeClass('highlighted');
+        console.log(event.cyTarget.connectedEdges());
         var nodeId = event.cyTarget._private.data.id;
         var nodeName = event.cyTarget._private.data.name;
         var nodeLabel = event.cyTarget._private.data.label;
@@ -82,6 +83,7 @@
 
         let highlightNextEle = () => {
             if( i < connectedEdges.length ){
+                console.log(connectedEdges[i]);
                 connectedEdges[i].addClass('highlighted');
                 i++;
                 highlightNextEle();
@@ -138,8 +140,10 @@
         animate: true,
         randomize: true,
         maxSimulationTime: maxLayoutDuration,
-        flow: { axis: 'y', minSeparation: 30 },
+        //flow: { axis: 'y', minSeparation: 30 },
         avoidOverlap: true,
+        fit: true,
+        //infinite: true,
         boundingBox: {
           x1: 0,
           y1: 0,
