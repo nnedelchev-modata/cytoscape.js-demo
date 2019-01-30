@@ -33,21 +33,21 @@
     <h4> Connection Details </h4>
       <form id="connection-form">
             <div class="form-group row">
-                <div class="col">
+                <div class="col connection-details">
                     <label for="host">Host</label>
-                    <input class="form-control" id="host" placeholder="Enter the server host name or IP address" value="localhost" style="background-image: url(&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABHklEQVQ4EaVTO26DQBD1ohQWaS2lg9JybZ+AK7hNwx2oIoVf4UPQ0Lj1FdKktevIpel8AKNUkDcWMxpgSaIEaTVv3sx7uztiTdu2s/98DywOw3Dued4Who/M2aIx5lZV1aEsy0+qiwHELyi+Ytl0PQ69SxAxkWIA4RMRTdNsKE59juMcuZd6xIAFeZ6fGCdJ8kY4y7KAuTRNGd7jyEBXsdOPE3a0QGPsniOnnYMO67LgSQN9T41F2QGrQRRFCwyzoIF2qyBuKKbcOgPXdVeY9rMWgNsjf9ccYesJhk3f5dYT1HX9gR0LLQR30TnjkUEcx2uIuS4RnI+aj6sJR0AM8AaumPaM/rRehyWhXqbFAA9kh3/8/NvHxAYGAsZ/il8IalkCLBfNVAAAAABJRU5ErkJggg==&quot;); background-attachment: scroll; background-size: 16px 18px; background-position: 98% 50%; background-repeat: no-repeat no-repeat;">
+                    <input class="form-control" id="host" placeholder="Enter the server host name or IP address" value="localhost" autocomplete="username">
                 </div>
-                <div class="col">
+                <div class="col connection-details">
                     <label for="port">Port</label>
                     <input type="number" class="form-control" id="port" placeholder="Enter the server port number" value="7687">
                 </div>
-                <div class="col">
+                <div class="col connection-details">
                     <label for="host">User</label>
                     <input class="form-control" id="user" placeholder="Enter your user name" value="neo4j">
                 </div>
-                <div class="col" id="password-here">
+                <div class="col connection-details" id="password-here">
                     <label for="password">Password</label>
-                    <input type="password" class="form-control text-security" id="password">
+                    <input type="password" class="form-control text-security" id="password" autocomplete="current-password">
                 </div>
             </div>
             <div class="form-group">
@@ -71,6 +71,8 @@
                 </button>
             </div>
             <div class="form-group" id="connection-management-status">
+            </div>
+            <div class="nodeInfo">
             </div>
             <table id="result" class="result table table-hover">
                 <thead id="result-head" class="thead-dark"></thead>
@@ -151,6 +153,7 @@
                 $("#run-button").removeAttr("disabled");
                 $("#connect-button").attr("disabled", "disabled");
                 $("#disconnect-button").removeAttr("disabled");
+                $(".connection-details").hide();
             } else {
                 $("#run-button").attr("disabled", "disabled");
                 $("#connect-button").removeAttr("disabled");

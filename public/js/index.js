@@ -41,13 +41,27 @@
 
     let $dataset = $('#data');
     //let getDataset = name => fetch(`datasets/${name}`).then( toJson );
-    let getDataset = (name) => {
+    let getDataset = name => {
       if(name === 'moviesNeo'){
-        return fetch('api/getMovies').then(toJson);
+        return fetch('api/getMovies').then( toJson );
       } else {
         return fetch(`datasets/${name}`).then( toJson );
       }
     }
+    let nodeValue = (container, id, labels, properties) => {
+      var card = document.createElement("div"),
+          cardHeader = document.createElement("h5"),
+          cardBody = document.createElement("div");
+      card.setAttribute("class", "card");
+      cardHeader.setAttribute("class", "card-header");
+      cardHeader.appendChild(document.createTextNode("#" + id + " " + labels));
+      cardBody.setAttribute("class", "card-body");
+      cardBody.appendChild(document.createTextNode(JSON.stringify(properties)));
+      card.appendChild(cardHeader);
+      card.appendChild(cardBody);
+      return card;
+  }
+
     let applyDataset = dataset => {
       // so new eles are offscreen
       cy.zoom(0.001);
@@ -59,12 +73,14 @@
 
       //Get Clicked Node
       cy.on('click', 'node', function (event) {
-        console.log(event.cyTarget._private);
-        cy.$('node:selected').neighborhood('edge').style( { 'line-color' : 'black' }); 
+        cy.elements().removeClass('highlighted');
+        var nodeId = event.cyTarget._private.data.id;
+        var nodeName = event.cyTarget._private.data.name;
+        var nodeLabel = event.cyTarget._private.data.label;
         var connectedEdges = event.cyTarget._private.edges
         var i = 0;
 
-        var highlightNextEle = function(){
+        let highlightNextEle = () => {
             if( i < connectedEdges.length ){
                 connectedEdges[i].addClass('highlighted');
                 i++;
@@ -72,7 +88,12 @@
             }
         };
         highlightNextEle();
-    });
+        var div = $(".nodeInfo");
+        div.innerHTML = "";
+        var content = nodeValue('body', nodeId, nodeName, event.cyTarget._private.data);
+        div.appendChild(content);
+      });
+      
      // cy.on('click', 'node', function(dataset){
      //   console.log( 'clicked ' + this.id() );
      // });
@@ -117,6 +138,8 @@
         animate: true,
         randomize: true,
         maxSimulationTime: maxLayoutDuration,
+        flow: { axis: 'y', minSeparation: 30 },
+        avoidOverlap: true,
         boundingBox: {
           x1: 0,
           y1: 0,
