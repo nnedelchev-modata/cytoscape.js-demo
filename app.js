@@ -98,7 +98,6 @@ app.get('/api/getMovies', function(req, res){
                         source = i;
                         i++;
                     }
-                    console.log(source);
                     rels.push({
                         "data": {
                             "id": 1000 + y,
@@ -141,7 +140,6 @@ app.get('/', function(req, res){
             var personArr = [];
             var personToMovieArr = [];
             result.records.forEach(function(record){
-                console.log(record._fields[0].labels);
                 if ((record._fields[0].labels)[0] === 'Movie'){
                     movie_id = record._fields[0].identity.low;
                     movieArr.push({

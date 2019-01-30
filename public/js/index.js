@@ -25,14 +25,14 @@
         cy.style().fromJson( stylesheet ).update();
       }
     };
-    //Show Hide left menu
+    //Show Hide right menu
     $('#config-toggle').addEventListener('click', function(){
       $('body').classList.toggle('config-closed');
       cy.resize();
     });
 
     $('#connect-toggle').addEventListener('click', function(){
-      $('body').classList.toggle('config-closed');
+      //$('body').classList.toggle('config-closed');
       $('body').classList.toggle('connect-closed');
       cy.resize();
     });
@@ -58,9 +58,24 @@
       cy.add( dataset );
 
       //Get Clicked Node
-      cy.on('click', 'node', function(dataset){
-        console.log( 'clicked ' + this.id() );
-      });
+      cy.on('click', 'node', function (event) {
+        console.log(event.cyTarget._private);
+        cy.$('node:selected').neighborhood('edge').style( { 'line-color' : 'black' }); 
+        var connectedEdges = event.cyTarget._private.edges
+        var i = 0;
+
+        var highlightNextEle = function(){
+            if( i < connectedEdges.length ){
+                connectedEdges[i].addClass('highlighted');
+                i++;
+                highlightNextEle();
+            }
+        };
+        highlightNextEle();
+    });
+     // cy.on('click', 'node', function(dataset){
+     //   console.log( 'clicked ' + this.id() );
+     // });
     }
     let applyDatasetFromSelect = () => Promise.resolve( $dataset.value ).then( getDataset ).then( applyDataset );
 
