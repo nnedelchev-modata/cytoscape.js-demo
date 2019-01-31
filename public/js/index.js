@@ -48,15 +48,24 @@
         return fetch(`datasets/${name}`).then( toJson );
       }
     }
-    let nodeValue = (container, id, labels, properties) => {
+    let nodeValue = (container, id, nodeLabel, labels, properties) => {
       var card = document.createElement("div"),
           cardHeader = document.createElement("h5"),
-          cardBody = document.createElement("div");
+          cardBody = document.createElement("div"),
+          div = document.createElement("div");
+      
       card.setAttribute("class", "card");
       cardHeader.setAttribute("class", "card-header");
-      cardHeader.appendChild(document.createTextNode("#" + id + " " + labels));
+      cardHeader.appendChild(document.createTextNode("#" + id + " " + labels + "("+nodeLabel+")"));
       cardBody.setAttribute("class", "card-body");
-      cardBody.appendChild(document.createTextNode(JSON.stringify(properties)));
+      
+      var content = "<h5>Relations: </h5>";
+      for(i=0 ; i < properties.length; i++){
+        content += "<strong>"+properties[i].name+"</strong> ("+properties[i].label+")<br />";
+        //console.log(properties[i].name);
+      }
+      //cardBody.appendChild(document.createTextNode(JSON.stringify(properties)));
+      cardBody.innerHTML = content;
       card.appendChild(cardHeader);
       card.appendChild(cardBody);
       return card;
@@ -74,25 +83,41 @@
       //Get Clicked Node
       cy.on('click', 'node', function (event) {
         cy.elements().removeClass('highlighted');
-        console.log(event.cyTarget.connectedEdges());
+        //console.log(event.cyTarget.connectedEdges());
         var nodeId = event.cyTarget._private.data.id;
         var nodeName = event.cyTarget._private.data.name;
         var nodeLabel = event.cyTarget._private.data.label;
         var connectedEdges = event.cyTarget._private.edges
         var i = 0;
 
+        var connectedData = [];
         let highlightNextEle = () => {
             if( i < connectedEdges.length ){
                 console.log(connectedEdges[i]);
+
+                if(nodeLabel === 'actor'){
+                  connectedData.push({
+                    name : connectedEdges[i]._private.source._private.data.name,
+                    label: connectedEdges[i]._private.source._private.data.label
+                  })
+                } else {
+                  connectedData.push({
+                    name : connectedEdges[i]._private.target._private.data.name,
+                    label: connectedEdges[i]._private.target._private.data.label
+                  })
+                }
+                
                 connectedEdges[i].addClass('highlighted');
                 i++;
+                
                 highlightNextEle();
             }
         };
         highlightNextEle();
+
         var div = $(".nodeInfo");
         div.innerHTML = "";
-        var content = nodeValue('body', nodeId, nodeName, event.cyTarget._private.data);
+        var content = nodeValue('body', nodeId,  nodeLabel, nodeName, connectedData);
         div.appendChild(content);
       });
       
