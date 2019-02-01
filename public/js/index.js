@@ -13,6 +13,7 @@
     let cy;
 
     let $stylesheet = $('#style');
+    let $nodeInfo = $('.nodeInfo');
     let getStylesheet = name => {
       let convert = res => name.match(/[.]json$/) ? toJson(res) : toText(res);
 
@@ -27,13 +28,11 @@
     };
     //Show Hide right menu
     $('#config-toggle').addEventListener('click', function(){
-
       $('body').classList.toggle('config-closed');
       cy.resize();
     });
 
     $('#connect-toggle').addEventListener('click', function(){
-      //$('body').classList.toggle('config-closed');
       $('body').classList.toggle('connect-closed');
       cy.resize();
     });
@@ -94,7 +93,7 @@
         var connectedData = [];
         let highlightNextEle = () => {
             if( i < connectedEdges.length ){
-                console.log(connectedEdges[i]);
+                //console.log(connectedEdges[i]);
 
                 if(nodeLabel === 'actor'){
                   connectedData.push({
@@ -305,4 +304,6 @@
 })();
 
 // tooltips with jQuery
-$(document).ready(() => $('.tooltip').tooltipster());
+$(document).ready(() => {
+  $('.tooltip').tooltipster();
+});

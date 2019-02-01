@@ -27,7 +27,7 @@
   {
     "selector": "node[?attr]",
     "style": {
-      "shape": "rectangle",
+      "shape": "data(type)",
       "background-color": "#aaa",
       "text-outline-color": "#aaa",
       "width": "16px",
@@ -61,7 +61,8 @@
       "opacity": "0.4",
       "line-color": "#bbb",
       "width": "mapData(weight, 0, 1, 1, 8)",
-      "overlay-padding": "13px"
+      "overlay-padding": "13px",
+      "style": "data(type)"
     }
   },
   {

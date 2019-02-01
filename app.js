@@ -74,7 +74,8 @@ app.get('/api/getMovies', function(req, res){
                                     id: i, 
                                     name: res.get('movie'), 
                                     label: 'movie',
-                                    type: 'diamond'
+                                    type: 'diamond',
+                                    classes: 'blue'
                                 }
                             }
                 );
@@ -111,7 +112,8 @@ app.get('/api/getMovies', function(req, res){
                                     name: name, 
                                     label: 'actor', 
                                     parent: target, 
-                                    type: 'star'
+                                    type: 'star',
+                                    classes: 'gold'
                                 }
                             };
                         }

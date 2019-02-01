@@ -35,3 +35,11 @@ edge.highlighted {
   line-color: #008484;
   width: 9px;
 }
+
+node.blue {
+  background-color: #347bed;
+}
+
+edge.gold {
+  background-color: #eded87;
+}
