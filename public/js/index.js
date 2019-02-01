@@ -27,7 +27,7 @@
     };
     //Show Hide right menu
     $('#config-toggle').addEventListener('click', function(){
-      
+
       $('body').classList.toggle('config-closed');
       cy.resize();
     });
@@ -163,28 +163,29 @@
         padding: layoutPadding,
         nodeSpacing: 12,
         edgeLengthVal: 45,
-        //animate: true,
+        animate: true,
         randomize: true,
         maxSimulationTime: maxLayoutDuration,
-        //flow: { axis: 'y', minSeparation: 30 },
+        flow: { axis: 'y', minSeparation: 30 },
         avoidOverlap: true,
         fit: true,
         //infinite: true,
+        levelWidth: levelWidth,
         boundingBox: {
           x1: 0,
           y1: 0,
-          x2: 10000,
-          y2: 10000
+          x2: 600,
+          y2: 600
         },
-        edgeLength: function( e ){
-          let w = e.data('weight');
+        //edgeLength: function( e ){
+        //  let w = e.data('weight');
 
-          if( w == null ){
-            w = 0.5;
-          }
+        //  if( w == null ){
+        //    w = 0.5;
+        //  }
 
-          return 45 / w;
-        }
+        //  return 45 / w;
+        //}
       },
       concentricCentrality: {
         name: 'concentric',
