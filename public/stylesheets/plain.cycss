@@ -1,14 +1,26 @@
 node {
   label: data(name);
+  shape: data(type);
+  height: 40;
+  width: 40;
 }
 
 edge {
   opacity: 0.5;
 }
 
+edge.label {
+  label: data(label);
+  width: 3;
+}
+
 node.highlighted {
   border-width: 6px;
   border-color: #333333;
+}
+
+node.parent{
+  background-opacity: 0.333;
 }
 
 node.start {

@@ -73,7 +73,8 @@ app.get('/api/getMovies', function(req, res){
                                 "data": {
                                     id: i, 
                                     name: res.get('movie'), 
-                                    label: 'movie'
+                                    label: 'movie',
+                                    type: 'diamond'
                                 }
                             }
                 );
@@ -84,7 +85,10 @@ app.get('/api/getMovies', function(req, res){
                 res.get('cast').forEach(name => {
                     var actor = {
                         "group": "nodes",
-                        "data": {name: name, label: 'actor'}
+                        "data": {
+                            name: name, 
+                            label: 'actor'
+                        }
                     };
                     
                     var source = _.findIndex(nodes, actor);
@@ -92,8 +96,25 @@ app.get('/api/getMovies', function(req, res){
                     if (source == -1) {
                         actor = {
                             "group": "nodes",
-                            "data": {id: i, name: name, label: 'actor'}
+                            "data": {
+                                id: i, 
+                                name: name, 
+                                label: 'actor', 
+                                type: 'star'
+                            }
                         };
+                        if(i & 1){
+                            actor = {
+                                "group": "nodes",
+                                "data": {
+                                    id: i, 
+                                    name: name, 
+                                    label: 'actor', 
+                                    parent: target, 
+                                    type: 'star'
+                                }
+                            };
+                        }
                         nodes.push(actor);
                         source = i;
                         i++;
@@ -102,7 +123,8 @@ app.get('/api/getMovies', function(req, res){
                         "data": {
                             "id": 1000 + y,
                             "source": target,
-                            "target": source
+                            "target": source,
+                            "label": 'acted in'
                         },
                         "position": {},
                         "group": "edges",
@@ -111,7 +133,7 @@ app.get('/api/getMovies', function(req, res){
                         "selectable": true,
                         "locked": true,
                         "grabbable": true,
-                        "classes": ""
+                        "classes": "red"
                         })
                     y ++;
                 })

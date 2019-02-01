@@ -27,6 +27,7 @@
     };
     //Show Hide right menu
     $('#config-toggle').addEventListener('click', function(){
+      
       $('body').classList.toggle('config-closed');
       cy.resize();
     });
@@ -140,8 +141,8 @@
     
 
     let $layout = $('#layout');
-    let maxLayoutDuration = 1500;
-    let layoutPadding = 50;
+    let maxLayoutDuration = 20;
+    let layoutPadding = 20;
     let concentric = function( node ){
       calculateCachedCentrality();
 
@@ -162,7 +163,7 @@
         padding: layoutPadding,
         nodeSpacing: 12,
         edgeLengthVal: 45,
-        animate: true,
+        //animate: true,
         randomize: true,
         maxSimulationTime: maxLayoutDuration,
         //flow: { axis: 'y', minSeparation: 30 },
