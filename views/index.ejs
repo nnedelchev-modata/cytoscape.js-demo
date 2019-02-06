@@ -46,7 +46,7 @@
                 </div>
                 <div class="col connection-details">
                     <label for="host">User</label>
-                    <input class="form-control" id="user" placeholder="Enter your user name" value="neo4j">
+                    <input class="form-control" id="user"  placeholder="Enter your user name" value="neo4j">
                 </div>
                 <div class="col connection-details" id="password-here">
                     <label for="password">Password</label>
@@ -234,6 +234,7 @@
             var head = document.getElementById("result-head"),
                 body = document.getElementById("result-body"),
                 foot = document.getElementById("result-foot");
+            var nodes = [];
             while (head.firstChild) head.removeChild(head.firstChild);
             while (body.firstChild) body.removeChild(body.firstChild);
             while (foot.firstChild) foot.removeChild(foot.firstChild);
@@ -270,7 +271,7 @@
                         else if (typeof value === "object" && !Array.isArray(value)) {
                             var type = value.constructor.name;
                             switch (type) {
-                                case "Node":
+                                case "node":
                                     content = nodeValue(div, value.id, value.labels, value.properties);
                                     break;
                                 default:
@@ -286,9 +287,23 @@
                         td.appendChild(div);
                         tr.appendChild(td);
                     }
-                    body.appendChild(tr)
+                    body.appendChild(tr);
+                    nodes.push({
+                      values: fields
+                    })
                 },
                 onFooter: function (metadata) {
+                    $.ajax({
+                      type: "POST",
+                      url: "/dataFromFe",
+                      data: {
+                        data: JSON.stringify(nodes),
+                        type: JSON.stringify(fields)
+                    },
+                    success: function (response) {
+                        var dataset = JSON.parse(response);
+                    }
+                  });
                     var time = new Date() - t0;
                     var tr = document.createElement("tr");
                     var th = document.createElement("th");

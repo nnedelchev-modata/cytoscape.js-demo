@@ -7,6 +7,8 @@ var _ = require('lodash');
 
 var bodyParser = require('body-parser');
 var app = express();
+var fs = require('fs');
+
 
 
 //View Engine 
@@ -57,23 +59,45 @@ var session = driver.session();
         }
 ]
 */
+/*
 
-app.get('/api/getMovies', function(req, res){
-    session
-        .run('MATCH (m:Movie)<-[:ACTED_IN]-(a:Person) \
-        RETURN m.title AS movie, collect(a.name) AS cast \
-        LIMIT {limit}', {limit: 50})
-        .then(results => {
-            session.close();
-            var nodes = [], rels = [], i = 0, y = 500;
+{ records: 
+   [ Record {
+       keys: [Array],
+       length: 2,
+       _fields: [Array],
+       _fieldLookup: [Object] },
+     Record {
+       keys: [Array],
+       length: 2,
+       _fields: [Array],
+       _fieldLookup: [Object] },
+
+*/
+
+function Record(keys, fields, keysLookup) {
+    this.keys = keys,
+    this.length = 2,
+    this._fields = fields,
+    this._fieldLookup = Object.assign({}, keysLookup)
+}
+
+Record.prototype.get = function(x) {
+    var source = this.keys.indexOf(x);
+    return this._fields[source];
+};
+
+let parseData = results => {
+    var nodes = [], rels = [], i = 0, y = 500;
             var movie_id = 0;
             results.records.forEach(res => {
+                var keys = res.keys;
                 nodes.push({
                                 "group": "nodes",
                                 "data": {
                                     id: i, 
-                                    name: res.get('movie'), 
-                                    label: 'movie',
+                                    name: res.get(keys[0]), 
+                                    label: keys[0],
                                     type: 'diamond',
                                     classes: 'blue'
                                 }
@@ -88,7 +112,7 @@ app.get('/api/getMovies', function(req, res){
                         "group": "nodes",
                         "data": {
                             name: name, 
-                            label: 'actor'
+                            label: keys[1]
                         }
                     };
                     
@@ -100,7 +124,7 @@ app.get('/api/getMovies', function(req, res){
                             "data": {
                                 id: i, 
                                 name: name, 
-                                label: 'actor', 
+                                label: keys[1], 
                                 type: 'star'
                             }
                         };
@@ -110,7 +134,7 @@ app.get('/api/getMovies', function(req, res){
                                 "data": {
                                     id: i, 
                                     name: name, 
-                                    label: 'actor', 
+                                    label: keys[1], 
                                     parent: target, 
                                     type: 'star',
                                     classes: 'gold'
@@ -143,9 +167,48 @@ app.get('/api/getMovies', function(req, res){
                     movie_id++;
                 }
             });
+
+            return JSON.stringify(nodes.concat(rels));
+}
+
+app.post('/dataFromFe', function(req, res){
+    var data = JSON.parse(req.body.data);
+    var dataType = JSON.parse(req.body.type);
+    var resultData = [];
+    var fieldLookup = [];
+        
+    fieldLookup[dataType[0]] = 0;
+    fieldLookup[dataType[1]] = 1;
+
+    data.forEach(value => {
+        var result = new Record(dataType, value.values, fieldLookup);
+        resultData.push(
+            result
+        )
+    })
+    var output = parseData({
+            records: resultData    
+        });
+    fs.writeFile('./public/datasets/custom.json', output, 'utf8', function(err) {
+        if (err) throw err;
+        console.log('complete');
+        });
+    res.send(JSON.stringify(output));
+})
+
+app.get('/api/getMovies', function(req, res){
+    session
+        .run('MATCH (m:Movie)<-[:ACTED_IN]-(a:Person) \
+        RETURN m.title AS movie, collect(a.name) AS cast \
+        LIMIT {limit}', {limit: 50})
+        .then(results => {
+            session.close();
+            
+            resultData = parseData(results);
             //console.log({nodes, links: rels});
             res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(nodes.concat(rels)));
+            //res.send(JSON.stringify(nodes.concat(rels)));
+            res.send(resultData);
         })
         .catch(function(error){
             console.log(error);

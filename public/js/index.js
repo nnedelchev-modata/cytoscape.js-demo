@@ -40,7 +40,8 @@
     let applyStylesheetFromSelect = () => Promise.resolve( $stylesheet.value ).then( getStylesheet ).then( applyStylesheet );
 
     let $dataset = $('#data');
-    //let getDataset = name => fetch(`datasets/${name}`).then( toJson );
+
+    let $resultTable = $('#result');
     let getDataset = name => {
       if(name === 'moviesNeo'){
         return fetch('api/getMovies').then( toJson );
@@ -120,12 +121,10 @@
         var content = nodeValue('body', nodeId,  nodeLabel, nodeName, connectedData);
         div.appendChild(content);
       });
-      
-     // cy.on('click', 'node', function(dataset){
-     //   console.log( 'clicked ' + this.id() );
-     // });
     }
     let applyDatasetFromSelect = () => Promise.resolve( $dataset.value ).then( getDataset ).then( applyDataset );
+
+    let applyDatasetFromBrowser = () => Promise.resolve( 'custom.json' ).then( getDataset ).then( applyDataset );
 
     let calculateCachedCentrality = () => {
       let nodes = cy.nodes();
@@ -291,6 +290,10 @@
       tryPromise( applyDatasetFromSelect ).then( applyLayoutFromSelect ).then ( applyAlgorithmFromSelect );
     });
 
+    $resultTable.addEventListener('change', function(){
+      console.log("Changed");
+    })
+
     $stylesheet.addEventListener('change', applyStylesheetFromSelect);
 
     $layout.addEventListener('change', applyLayoutFromSelect);
@@ -300,6 +303,11 @@
     $algorithm.addEventListener('change', applyAlgorithmFromSelect);
 
     $('#redo-algorithm').addEventListener('click', applyAlgorithmFromSelect);
+
+    $("#run-button").addEventListener("click", function() {
+      tryPromise( applyDatasetFromBrowser ).then( applyLayoutFromSelect ).then ( applyAlgorithmFromSelect );
+  });
+
   });
 })();
 
