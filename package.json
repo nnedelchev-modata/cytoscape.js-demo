@@ -15,6 +15,7 @@
     "morgan":"*",
     "neo4j-driver": "*",
     "cytoscape": "*",
-    "lodash": "^4.15.0"
+    "lodash": "^4.15.0",
+    "graphql": "^14.1.1"
   }
 }

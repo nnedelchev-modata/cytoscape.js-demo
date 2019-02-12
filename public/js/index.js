@@ -84,7 +84,7 @@
       //Get Clicked Node
       cy.on('click', 'node', function (event) {
         cy.elements().removeClass('highlighted');
-        //console.log(event.cyTarget.connectedEdges());
+        console.log(cy.elements().jsons());
         var nodeId = event.cyTarget._private.data.id;
         var nodeName = event.cyTarget._private.data.name;
         var nodeLabel = event.cyTarget._private.data.label;
@@ -95,8 +95,7 @@
         let highlightNextEle = () => {
             if( i < connectedEdges.length ){
                 //console.log(connectedEdges[i]);
-
-                if(nodeLabel === 'actor'){
+                if(nodeLabel === 'cast'){                  
                   connectedData.push({
                     name : connectedEdges[i]._private.source._private.data.name,
                     label: connectedEdges[i]._private.source._private.data.label
