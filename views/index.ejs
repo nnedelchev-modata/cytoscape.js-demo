@@ -1,327 +1,102 @@
 <!DOCTYPE html>
-
-<html>
-
+<html lang="en">
 <head>
-  <link rel="stylesheet" href="css/normalize.css" />
-  <link rel="stylesheet" href="css/skeleton.css" />
-  <link rel="stylesheet" href="css/font-awesome.css" />
-  <link rel="stylesheet" href="css/open-sans.css" />
-  <link rel="stylesheet" href="css/index.css" />
-  <link rel="stylesheet" href="css/tooltipster.bundle.min.css" />
-
-  <script src="js/cytoscape.min.js"></script>
-  <script src="js/cola.js"></script>
-  <script src="js/cytoscape-cola.js"></script>
-  <script src="js/jquery-3.1.1.min.js"></script>
-  <script src="js/tooltipster.bundle.min.js"></script>
-  <script src="js/index.js"></script>
-  <script src="js/j2neo.js"></script>
-
-
-  <title>Cytoscape.js demo</title>
+	<title>Cytoscape.js Demo</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->	
+	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/iconic/css/material-design-iconic-font.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="css/util.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+<!--===============================================================================================-->
 </head>
+<body>
+	
+	<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">
+				<form class="login100-form validate-form" method="POST">
+					<span class="login100-form-title p-b-26">
+						Welcome
+					</span>
+					<span class="login100-form-title p-b-48">
+						<i class="zmdi zmdi-font"></i>
+					</span>
 
-<body class="config-closed connect-closed">
-  <span class="fa fa-bars config-toggle" id="config-toggle"></span>
-  <span class="fa fa-database connect-toggle" id="connect-toggle"></span>
-  
-  <div class="nodeInfo">
-  </div>
+					<div class="wrap-input100 validate-input" data-validate = "Valid email is: a@b.c">
+						<input class="input100" type="text" name="email">
+						<span class="focus-input100" data-placeholder="Email"></span>
+					</div>
 
-  <div id="cy" class="main">
-  </div>
-  
-  <div class="connect" id="connection">
-    <h4> Connection Details </h4>
-      <form id="connection-form">
-            <div class="form-group row">
-                <div class="col connection-details">
-                    <label for="host">Host</label>
-                    <input class="form-control" id="host" placeholder="Enter the server host name or IP address" value="localhost" autocomplete="username">
-                </div>
-                <div class="col connection-details">
-                    <label for="port">Port</label>
-                    <input type="number" class="form-control" id="port" placeholder="Enter the server port number" value="7687">
-                </div>
-                <div class="col connection-details">
-                    <label for="host">User</label>
-                    <input class="form-control" id="user"  placeholder="Enter your user name" value="neo4j">
-                </div>
-                <div class="col connection-details" id="password-here">
-                    <label for="password">Password</label>
-                    <input type="password" class="form-control text-security" id="password" autocomplete="current-password">
-                </div>
-            </div>
-            <div class="form-group">
-            </div>
-            <div class="form-group row">
-                <div class="col-12">
-                    <label for="cypher">Cypher</label>
-                    <textarea class="form-control" id="cypher" style="width:100%;height:7.5rem" title="Cypher query">MATCH (m:Movie)<-[:ACTED_IN]-(a:Person) RETURN m.title AS movie, collect(a.name) AS cast LIMIT 50</textarea>
-                </div>
-                <!--<div class="col-4">-->
-                    <!--<label for="params">Parameters</label>-->
-                    <!--<select id="params" class="custom-select" size="3" style="height:7.5rem">-->
-                    <!--</select>-->
-                <!--</div>-->
-            </div>
-            <div class="form-group">
-                <button id="connect-button" type="button" class="btn btn-primary" onclick="connect()">Connect</button>
-                <button id="disconnect-button" type="button" class="btn btn-primary" onclick="disconnect()" disabled="disabled">Disconnect
-                </button>
-                <button id="run-button" type="button" class="btn btn-primary" onclick="run($(&quot;#cypher&quot;).val())" disabled="disabled">Run
-                </button>
-            </div>
-            <div class="form-group" id="connection-management-status">
-            </div>
-            
-            <table id="result" class="result table table-hover">
-                <thead id="result-head" class="thead-dark"></thead>
-                <tbody id="result-body"></tbody>
-                <tfoot id="result-foot" class="thead-dark"></tfoot>
-            </table>
-        </form>
-  </div>
+					<div class="wrap-input100 validate-input" data-validate="Enter password">
+						<span class="btn-show-pass">
+							<i class="zmdi zmdi-eye"></i>
+						</span>
+						<input class="input100" type="password" name="password">
+						<span class="focus-input100" data-placeholder="Password"></span>
+					</div>
 
-  <div class="tools" id="config">
-    <form role="search" class="navbar-form" id="search">
-      <div class="form-group">
-        <input type="text" value="Matrix" placeholder="Search for Movie Title" class="form-control" name="search">
-      </div>
-      <button class="btn btn-default" type="submit">Search</button>
-    </form>
-    <h4>Data</h4>
-    <label for="data" class="tooltip u-pull-left" title="Switch to a new dataset">Active dataset</label>
-    <div class="u-cf"></div>
-    <select class id="data">
-        <option value="social.json" >Social</option>
-        <option value="genes.json">Genes</option>
-        <option value="movies.json">Movies Static</option>
-        <option value="moviesNeo" selected>Movies Neo4J</option>
-      </select>
-    <h4>Style</h4>
-    <label for="style" class="tooltip u-pull-left" title="Switch to a new graph stylesheet">Active stylesheet</label>
-    <div class="u-cf"></div>
-    <select id="style">
-        <option value="plain.cycss" selected>Plain</option>
-        <option value="fancy.json">Advanced</option>
-        <option value="custom.cycss">Custom</option>
-      </select>
-    <h4>Layout</h4>
-    <label for="layout" class="tooltip u-pull-left" title="Change layout">Active layout</label>
-    <div class="u-cf"></div>
-    <select id="layout">
-        <option value="cola" selected>Force-directed</option>
-        <option value="concentricCentrality">Concentric by centrality</option>
-        <option value="concentricHierarchyCentrality">Hierarchy by centrality</option>
-        <option value="custom">Custom</option>
-      </select>
-    <i id="redo-layout" class="fa fa-refresh action-icon tooltip" title="Redo layout"></i>
-    <h4>Algorithms</h4>
-    <label for="algorithm" class="tooltip u-pull-left" title="Run algorithm. Try running A* a few times to see distances to different nodes">
-        Run algorithm
-      </label>
-    <div class="u-cf"></div>
-    <select id="algorithm">
-        <option value="none" selected>None</option>
-        <option value="bfs">BFS</option>
-        <option value="dfs">DFS</option>
-        <option value="astar">A*</option>
-        <option value="custom">Custom</option>
-      </select>
-    <i id="redo-algorithm" class="fa fa-refresh action-icon tooltip" title="Redo algorithm visualization"></i>
+					<div class="container-login100-form-btn">
+						<div class="wrap-login100-form-btn">
+							<div class="login100-form-bgbtn"></div>
+							<button class="login100-form-btn">
+								Login
+							</button>
+						</div>
+					</div>
 
-  <script>
-        $("#result-form").hide();
+<!--
+					<div class="text-center p-t-115">
+						<span class="txt1">
+							Don’t have an account?
+						</span>
 
-        var pub = {};
+						<a class="txt2" href="#">
+							Sign Up
+						</a>
+					</div>
+          -->
+				</form>
+			</div>
+		</div>
+	</div>
+	
 
-        function setConnectionManagementStatus(level, message) {
-            var status = document.getElementById("connection-management-status"),
-                div = document.createElement("div"),
-                text = document.createTextNode(message);
-            while (status.firstChild) status.removeChild(status.firstChild);
-            if (level) {
-                div.setAttribute("class", "alert alert-" + level);
-                div.setAttribute("role", "alert");
-                status.appendChild(div);
-                div.appendChild(text);
-            }
-        }
-
-        function setConnected(connected) {
-            if (connected) {
-                $("#run-button").removeAttr("disabled");
-                $("#connect-button").attr("disabled", "disabled");
-                $("#disconnect-button").removeAttr("disabled");
-                $(".connection-details").hide();
-            } else {
-                $("#run-button").attr("disabled", "disabled");
-                $("#connect-button").removeAttr("disabled");
-                $("#disconnect-button").attr("disabled", "disabled");
-            }
-        }
-
-        function connect() {
-            pub.cx = js2neo.open({
-                host: document.getElementById("host").value,
-                port: parseInt(document.getElementById("port").value),
-                user: document.getElementById("user").value,
-                password: document.getElementById("password").value,
-                onOpen: function(metadata) {
-                    // for (var key in metadata) {
-                    //     if (metadata.hasOwnProperty(key)) pub[key] = metadata[key];
-                    // }
-                    // setConnectionManagementStatus("success", "Connected to " + pub.host + " on port " + pub.port);
-                },
-                onHandshake: function(metadata) {
-                    // for (var key in metadata) {
-                    //     if (metadata.hasOwnProperty(key)) pub[key] = metadata[key];
-                    // }
-                    // setConnectionManagementStatus("success", "Using Bolt protocol v" + pub.protocolVersion);
-                },
-                onInit: function(metadata) {
-                    for (var key in metadata) {
-                        if (metadata.hasOwnProperty(key)) pub[key] = metadata[key];
-                    }
-                    setConnectionManagementStatus("success", "Connected with Bolt v" + pub.protocolVersion + " to " + pub.host + " on port " + pub.port + " as user " + pub.user);
-                    setConnected(true);
-                },
-                onInitFailure: function(failure) {
-                    setConnectionManagementStatus("danger", failure.code + ": " + failure.message);
-                    setConnected(false);
-                },
-                onClose: function(event) {
-                    switch (event.code)
-                    {
-                        case 1000:
-                        case 1001:
-                            setConnectionManagementStatus();
-                            break;
-                        case 1006:
-                            setConnectionManagementStatus("danger", "Connection failed");
-                            break;
-                        default:
-                            setConnectionManagementStatus("danger", "Connection failed with code " + event.code);
-                    }
-                    setConnected(false);
-                    pub.cx = undefined;
-                }
-            });
-        }
-
-        function disconnect() {
-            pub.cx.close();
-        }
-
-        function nodeValue(container, id, labels, properties) {
-            var card = document.createElement("div"),
-                cardHeader = document.createElement("h5"),
-                cardBody = document.createElement("div");
-            card.setAttribute("class", "card");
-            cardHeader.setAttribute("class", "card-header");
-            cardHeader.appendChild(document.createTextNode("#" + id + " " + labels));
-            cardBody.setAttribute("class", "card-body");
-            cardBody.appendChild(document.createTextNode(JSON.stringify(properties)));
-            card.appendChild(cardHeader);
-            card.appendChild(cardBody);
-            return card;
-        }
-
-        function run(cypher) {
-            // Clear any existing result
-            var head = document.getElementById("result-head"),
-                body = document.getElementById("result-body"),
-                foot = document.getElementById("result-foot");
-            var nodes = [];
-            while (head.firstChild) head.removeChild(head.firstChild);
-            while (body.firstChild) body.removeChild(body.firstChild);
-            while (foot.firstChild) foot.removeChild(foot.firstChild);
-
-            var fields = [],
-                count = 0,
-                t0 = new Date();
-
-            pub.cx.run(cypher, {}, {
-                onHeader: function (metadata) {
-                    $("#result-form").show();
-                    var tr = document.createElement("tr");
-                    for (var i = 0; i < metadata.fields.length; i++) {
-                        fields.push(metadata.fields[i]);
-                        var th = document.createElement("th");
-                        th.appendChild(document.createTextNode(fields[i]));
-                        tr.appendChild(th);
-                    }
-                    head.appendChild(tr)
-                },
-                onRecord: function (fields) {
-                    count += 1;
-                    var tr = document.createElement("tr");
-                    for (var i = 0; i < fields.length; i++) {
-                        var td = document.createElement("td");
-                        var div = document.createElement("div");
-                        var value = fields[i], content;
-                        if (value === null) {
-                            content = undefined;
-                        }
-                        else if (typeof value === "string") {
-                            content = document.createTextNode(value);
-                        }
-                        else if (typeof value === "object" && !Array.isArray(value)) {
-                            var type = value.constructor.name;
-                            switch (type) {
-                                case "node":
-                                    content = nodeValue(div, value.id, value.labels, value.properties);
-                                    break;
-                                default:
-                                    div.setAttribute("style", "white-space: pre");
-                                    content = document.createTextNode(type + "(" + JSON.stringify(value, null, "  ") + ")");
-                            }
-                        }
-                        else {
-                            content = document.createTextNode(JSON.stringify(value));
-                        }
-                        if (content !== undefined)
-                            div.appendChild(content);
-                        td.appendChild(div);
-                        tr.appendChild(td);
-                    }
-                    body.appendChild(tr);
-                    nodes.push({
-                      values: fields
-                    })
-                },
-                onFooter: function (metadata) {
-                    $.ajax({
-                      type: "POST",
-                      url: "/dataFromFe",
-                      data: {
-                        data: JSON.stringify(nodes),
-                        type: JSON.stringify(fields)
-                    },
-                    success: function (response) {
-                        var dataset = JSON.parse(response);
-                    }
-                  });
-                    var time = new Date() - t0;
-                    var tr = document.createElement("tr");
-                    var th = document.createElement("th");
-                    th.setAttribute("colspan", "" + fields.length);
-                    var server = pub.user + "@" + pub.host + ":" + pub.port;
-                    th.appendChild(document.createTextNode(
-                        count + " record" + (count === 1 ? "" : "s") +
-                        " received from " + server + " in " + time + "ms"));
-                    tr.appendChild(th);
-                    foot.appendChild(tr)
-                },
-                onFailure: function (failure) {
-                    console.log(failure.code + ": " + failure.message);
-                }
-            });
-        }
-  </script>
+	<div id="dropDownSelect1"></div>
+	
+<!--===============================================================================================-->
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/animsition/js/animsition.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/bootstrap/js/popper.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/select2/select2.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/daterangepicker/moment.min.js"></script>
+	<script src="vendor/daterangepicker/daterangepicker.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/countdowntime/countdowntime.js"></script>
+<!--===============================================================================================-->
+	<script src="js/main.js"></script>
 
 </body>
-
 </html>

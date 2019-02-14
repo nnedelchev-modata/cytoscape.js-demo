@@ -9,19 +9,73 @@ var bodyParser = require('body-parser');
 var app = express();
 var fs = require('fs');
 
+var axios = require('axios');
+var bcrypt = require('bcrypt-nodejs');
+var session = require('express-session')
+const LocalStrategy = require('passport-local').Strategy;
+const uuid = require('uuid/v4')
+const passport = require('passport');
+const FileStore = require('session-file-store')(session);
+
+
+
+
+// configure passport.js to use the local strategy
+passport.use(new LocalStrategy(
+    { usernameField: 'email' },
+    (email, password, done) => {
+      axios.get(`http://localhost:8000/users?email=${email}`)
+      .then(res => {
+        const user = res.data[0]
+        if (!user) {
+          return done(null, false, { message: 'Invalid credentials.\n' });
+        }
+        if (!bcrypt.compareSync(password, user.password)) {
+          return done(null, false, { message: 'Invalid credentials.\n' });
+        }
+        return done(null, user);
+      })
+      .catch(error => done(error));
+    }
+  ));
+  
+  // tell passport how to serialize the user
+  passport.serializeUser((user, done) => {
+    done(null, user.id);
+  });
+  
+  passport.deserializeUser((id, done) => {
+    axios.get(`http://localhost:8000/users/${id}`)
+    .then(res => done(null, res.data) )
+    .catch(error => done(error, false))
+  });
+  
+
 
 
 //View Engine 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use(session({
+    genid: (req) => {
+      return uuid() // use UUIDs for session IDs
+    },
+    store: new FileStore(),
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true
+  }))
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(passport.initialize());
+app.use(passport.session());
 
 var driver = neo4j.driver('bolt://172.17.0.3:7687', neo4j.auth.basic('neo4j', 'r0d0t123'));
-var session = driver.session();
+var neo4jSession = driver.session();
 
 
 /*
@@ -197,12 +251,12 @@ app.post('/dataFromFe', function(req, res){
 })
 
 app.get('/api/getMovies', function(req, res){
-    session
+    neo4jSession
         .run('MATCH (m:Movie)<-[:ACTED_IN]-(a:Person) \
         RETURN m.title AS movie, collect(a.name) AS cast \
         LIMIT {limit}', {limit: 50})
         .then(results => {
-            session.close();
+            neo4jSession.close();
             
             resultData = parseData(results);
             //console.log({nodes, links: rels});
@@ -216,10 +270,33 @@ app.get('/api/getMovies', function(req, res){
 
 });
 
-//Render home
+//User Login
+app.post('/', (req, res, next) => {
+    passport.authenticate('local', (err, user, info) => {
+      if(info) {return res.send(info.message)}
+      if (err) { return next(err); }
+      if (!user) { return res.redirect('/'); }
+      req.login(user, (err) => {
+        if (err) { return next(err); }
+        return res.redirect('/');
+      })
+    })(req, res, next);
+  })
+
 app.get('/', function(req, res){
+    if(req.isAuthenticated()) {
+        return res.redirect('/demo');
+    }else{
+        res.render('index');
+    }
+})
+
+
+//Render home
+app.get('/demo', function(req, res){
+    if(req.isAuthenticated()) {      
     //Get data from neo4j
-    session
+    neo4jSession
         .run('MATCH (n) RETURN n LIMIT 50')
         .then(function(result){
             var movie_id, person_id = 0;
@@ -277,7 +354,7 @@ app.get('/', function(req, res){
                                 console.log(error);
                             })
                 }
-            res.render('index', {
+            res.render('demo', {
                 movies: movieArr,
                 persons: personArr,
                 personToMovie: personToMovieArr
@@ -286,6 +363,9 @@ app.get('/', function(req, res){
         .catch(function(error){
             console.log(error);
         })
+    } else {
+        res.redirect('/')
+      }
 });
 
 app.listen(3000);
